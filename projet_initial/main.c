@@ -90,6 +90,10 @@ void initStruct(void) {
         rt_printf("Error task create: %s\n", strerror(-err));
         exit(EXIT_FAILURE);
     }
+	/*if (err = rt_task_create(&tbattery_level, NULL, 0, PRIORITY_TBATTERY, 0)) {
+        rt_printf("Error task create: %s\n", strerror(-err));
+        exit(EXIT_FAILURE);
+    }*/
 
     /* Creation des files de messages */
     if (err = rt_queue_create(&queueMsgGUI, "toto", MSG_QUEUE_SIZE*sizeof(DMessage), MSG_QUEUE_SIZE, Q_FIFO)){
@@ -101,10 +105,8 @@ void initStruct(void) {
     robot = d_new_robot();
     move = d_new_movement();
     serveur = d_new_server();
-    camera = d_new_camera();
-    image = d_new_image();
-    jpeg = d_new_jpegimage();
-    
+   
+	//battery = d_new_battery();
 }
 
 void startTasks() {
@@ -129,6 +131,10 @@ void startTasks() {
         rt_printf("Error task start: %s\n", strerror(-err));
         exit(EXIT_FAILURE);
     }
+   /* if (err = rt_task_start(&tbattery_level, &battery_level, NULL)) {
+        rt_printf("Error task start: %s\n", strerror(-err));
+        exit(EXIT_FAILURE);
+    }*/
 
 }
 
@@ -137,4 +143,5 @@ void deleteTasks() {
     rt_task_delete(&tconnect);
     rt_task_delete(&tmove);
     rt_task_delete(&ttraiter_image);
+   /* rt_task_delete(&tbattery_level);*/
 }
