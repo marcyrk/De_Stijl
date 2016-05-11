@@ -10,15 +10,13 @@
 
 #include "includes.h"
 
-/* @descripteurs des tâches */extern RT_TASK detecter_arene ;
-//Anciens
+/* @descripteurs des tâches */
 extern RT_TASK tServeur;
 extern RT_TASK tconnect;
 extern RT_TASK tmove;
 extern RT_TASK tenvoyer;
-//Nouveaux
 extern RT_TASK ttraiter_image;
-extern RT_TASK tdetecter_arene ;
+//extern RT_TASK tbattery_level;
 
 /* @descripteurs des mutex */
 extern RT_MUTEX mutexEtat;
@@ -33,16 +31,12 @@ extern RT_QUEUE queueMsgGUI;
 /* @variables partagées */
 extern int etatCommMoniteur;
 extern int etatCommRobot;
-
 extern int img_transmit;
 extern DServer *serveur;
 extern DRobot *robot;
 extern DMovement *move;
-/*extern DCamera *camera;
-extern DImage *image;
-extern DJpegimage *jpeg;*/
-extern DPosition *position;
-extern DBattery *batterie;
+
+//extern DBattery *battery;
 
 /* @constantes */
 extern int MSG_QUEUE_SIZE;
