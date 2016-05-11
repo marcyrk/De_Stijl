@@ -19,9 +19,9 @@ extern "C" {
         void deplacer(void *arg);
         void envoyer(void *arg);
 	void traiter_image(void *arg);
+	/*void battery_level(void *arg);*/
 #ifdef	__cplusplus
 }
 #endif
 
 #endif	/* FONCTIONS_H */
-
