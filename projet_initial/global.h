@@ -30,13 +30,16 @@ extern RT_QUEUE queueMsgGUI;
 /* @variables partagées */
 extern int etatCommMoniteur;
 extern int etatCommRobot;
+
 extern int img_transmit;
 extern DServer *serveur;
 extern DRobot *robot;
 extern DMovement *move;
-extern DCamera *camera;
+/*extern DCamera *camera;
 extern DImage *image;
-extern DJpegimage *jpeg;
+extern DJpegimage *jpeg;*/
+extern DPosition *position;
+extern DBattery *batterie;
 
 /* @constantes */
 extern int MSG_QUEUE_SIZE;
