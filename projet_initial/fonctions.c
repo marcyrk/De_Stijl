@@ -1,19 +1,6 @@
 #include "fonctions.h"
 
-int write_in_queue(RT_QUEUE *msgQueue, void * data, int size) {
-    void *msg;
-    int err;
-
-    msg = rt_queue_alloc(msgQueue, size);
-    memcpy(msg, &data, size);
-
-    if ((err = rt_queue_send(msgQueue, msg, sizeof (DMessage), Q_NORMAL)) < 0) {
-        rt_printf("Error msg queue send: %s\n", strerror(-err));
-    }
-    rt_queue_free(&queueMsgGUI, msg);
-
-    return err;
-}
+int write_in_queue(RT_QUEUE *msgQueue, void * data, int size);
 
 void envoyer(void * arg) {
     DMessage *msg;
@@ -27,20 +14,7 @@ void envoyer(void * arg) {
             msg->free(msg);
         } else {
             rt_printf("Error msg queue write: %s\n", strerror(-err));
-        }int write_in_queue(RT_QUEUE *msgQueue, void * data, int size) {
-    void *msg;
-    int err;
-
-    msg = rt_queue_alloc(msgQueue, size);
-    memcpy(msg, &data, size);
-
-    if ((err = rt_queue_send(msgQueue, msg, sizeof (DMessage), Q_NORMAL)) < 0) {
-        rt_printf("Error msg queue send: %s\n", strerror(-err));
-    }
-    rt_queue_free(&queueMsgGUI, msg);
-
-    return err;
-}
+        }
     }
 }
 
@@ -77,7 +51,7 @@ void connecter(void * arg) {
             message->free(message);
         }
     }
-}
+}
 
 void communiquer(void *arg) {
     DMessage *msg = d_new_message();
@@ -189,6 +163,9 @@ void deplacer(void *arg) {
 
 void traiter_image (void *arg) {
    int status = 1;
+	DCamera * camera = d_new_camera();
+    DImage *image = d_new_image();
+    DJpegimage *jpeg = d_new_jpegimage();
    DMessage *message;
 
     camera->open(camera);
@@ -228,3 +205,17 @@ void traiter_image (void *arg) {
     }
 }
 
+int write_in_queue(RT_QUEUE *msgQueue, void * data, int size) {
+    void *msg;
+    int err;
+
+    msg = rt_queue_alloc(msgQueue, size);
+    memcpy(msg, &data, size);
+
+    if ((err = rt_queue_send(msgQueue, msg, sizeof (DMessage), Q_NORMAL)) < 0) {
+        rt_printf("Error msg queue send: %s\n", strerror(-err));
+    }
+    rt_queue_free(&queueMsgGUI, msg);
+
+    return err;
+}
