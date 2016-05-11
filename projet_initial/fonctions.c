@@ -160,6 +160,48 @@ void deplacer(void *arg) {
     }
 }
 
+
+void traiter_image (void *arg) {
+   int status = 1;
+   DMessage *message;
+
+    camera->open(camera);
+    img_transmit = 1;
+
+    rt_printf("ttraiter_image : Debut de l'éxecution de periodique à 600ms\n");
+    rt_task_set_periodic(NULL, TM_NOW, 600000000);
+
+    while (1) {
+        /* Attente de l'activation périodique */
+        rt_task_wait_period(NULL);
+        rt_printf("ttraiter_image : Activation périodique\n");
+
+        rt_mutex_acquire(&mutexEtat, TM_INFINITE);
+        status = etatCommMoniteur;
+        rt_mutex_release(&mutexEtat);
+	
+        if (status == STATUS_OK) {
+			
+		  	if (img_transmit == 1) {
+			 
+				camera->get_frame(camera,image);
+				jpeg->compress(jpeg,image);
+
+				message = d_new_message();
+				message->put_jpeg_image(message,jpeg);
+	
+				rt_printf("ttraiter_image : Envoi message\n");
+                if (write_in_queue(&queueMsgGUI, message, sizeof (DMessage)) < 0) {
+                    message->free(message);
+                }
+				image->release(image);
+				jpeg->release(jpeg);
+	
+			}
+		}
+    }
+}
+
 int write_in_queue(RT_QUEUE *msgQueue, void * data, int size) {
     void *msg;
     int err;
