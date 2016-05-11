@@ -15,6 +15,7 @@ extern RT_TASK tServeur;
 extern RT_TASK tconnect;
 extern RT_TASK tmove;
 extern RT_TASK tenvoyer;
+extern RT_TASK ttraiter_image;
 
 /* @descripteurs des mutex */
 extern RT_MUTEX mutexEtat;
@@ -29,9 +30,13 @@ extern RT_QUEUE queueMsgGUI;
 /* @variables partagées */
 extern int etatCommMoniteur;
 extern int etatCommRobot;
+extern int img_transmit;
 extern DServer *serveur;
 extern DRobot *robot;
 extern DMovement *move;
+extern DCamera *camera;
+extern DImage *image;
+extern DJpegimage *jpeg;
 
 /* @constantes */
 extern int MSG_QUEUE_SIZE;
@@ -39,6 +44,6 @@ extern int PRIORITY_TSERVEUR;
 extern int PRIORITY_TCONNECT;
 extern int PRIORITY_TMOVE;
 extern int PRIORITY_TENVOYER;
+extern int PRIORITY_TIMAGE;
 
 #endif	/* GLOBAL_H */
-
