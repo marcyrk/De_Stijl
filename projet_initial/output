@@ -1,0 +1,56 @@
+cd ../lib_destijl/source; echo "entering source"; \
+	gcc -g -Wall -I../xenomai/include  -I../lib_destijl/headers  -c *.c
+entering source
+cd ..
+gcc -g -Wall -I../xenomai/include  -I../lib_destijl/headers  -c fonctions.c -o fonctions.o
+g++ -lopencv_core -lopencv_highgui -lxenomai -lnative -lrtdk -L./xenomai/lib fonctions.o global.o main.o ../lib_destijl/source/*.o -o robot
+cd ../lib_destijl/source; echo "entering source"; \
+	gcc -g -Wall -I../xenomai/include  -I../lib_destijl/headers  -c *.c
+entering source
+cd ..
+gcc -g -Wall -I../xenomai/include  -I../lib_destijl/headers  -c fonctions.c -o fonctions.o
+g++ -lxenomai -lnative -lrtdk -L./xenomai/lib fonctions.o global.o main.o ../lib_destijl/source/*.o -o robot  -lopencv_core -lopencv_highgui 
+cd ../lib_destijl/source; echo "entering source"; \
+	gcc -g -Wall -I../xenomai/include  -I../lib_destijl/headers  -c *.c
+entering source
+cd ..
+gcc -g -Wall -I../xenomai/include  -I../lib_destijl/headers  -c fonctions.c -o fonctions.o
+gcc -g -Wall -I../xenomai/include  -I../lib_destijl/headers -c global.c -o global.o
+gcc -g -Wall -I../xenomai/include  -I../lib_destijl/headers -c main.c -o main.o
+g++ -lxenomai -lnative -lrtdk -L./xenomai/lib fonctions.o global.o main.o ../lib_destijl/source/*.o -o robot  -lopencv_core -lopencv_highgui 
+cd ../lib_destijl/source; echo "entering source"; \
+	gcc -g -Wall -I../xenomai/include  -I../lib_destijl/headers  -c *.c
+entering source
+cd ..
+gcc -g -Wall -I../xenomai/include  -I../lib_destijl/headers  -c fonctions.c -o fonctions.o
+g++ -lxenomai -lnative -lrtdk -L./xenomai/lib fonctions.o global.o main.o ../lib_destijl/source/*.o -o robot  -lopencv_core -lopencv_highgui -lopencv_imgproc
+cd ../lib_destijl/source; echo "entering source"; \
+	gcc -g -Wall -I../xenomai/include  -I../lib_destijl/headers  -c *.c
+entering source
+cd ..
+gcc -g -Wall -I../xenomai/include  -I../lib_destijl/headers  -c fonctions.c -o fonctions.o
+g++ -L./xenomai/lib fonctions.o global.o main.o ../lib_destijl/source/*.o -o robot  -lopencv_core -lopencv_highgui -lopencv_imgproc -lxenomai -lnative -lrtdk 
+cd ../lib_destijl/source; echo "entering source"; \
+	gcc -g -Wall -I../xenomai/include  -I../lib_destijl/headers  -c *.c
+entering source
+cd ..
+gcc -g -Wall -I../xenomai/include  -I../lib_destijl/headers  -c fonctions.c -o fonctions.o
+g++ fonctions.o global.o main.o ../lib_destijl/source/*.o -o robot  -lopencv_core -lopencv_highgui -lopencv_imgproc -lxenomai -lnative -lrtdk -L./xenomai/lib 
+cd ../lib_destijl/source; echo "entering source"; \
+	gcc -g -Wall -I../xenomai/include  -I../lib_destijl/headers  -c *.c
+entering source
+cd ..
+gcc -g -Wall -I../xenomai/include  -I../lib_destijl/headers  -c fonctions.c -o fonctions.o
+g++ fonctions.o global.o main.o ../lib_destijl/source/*.o -o robot -L./xenomai/lib  -lopencv_core -lopencv_highgui -lopencv_imgproc -lxenomai -lnative -lrtdk 
+cd ../lib_destijl/source; echo "entering source"; \
+	gcc -g -Wall -I../xenomai/include  -I../lib_destijl/headers  -c *.c
+entering source
+cd ..
+gcc -g -Wall -I../xenomai/include  -I../lib_destijl/headers  -c fonctions.c -o fonctions.o
+g++ fonctions.o global.o main.o ../lib_destijl/source/*.o -o robot -L../xenomai/lib -lopencv_core -lopencv_highgui -lopencv_imgproc -lxenomai -lnative -lrtdk 
+cd ../lib_destijl/source; echo "entering source"; \
+	gcc -g -Wall -I../xenomai/include  -I../lib_destijl/headers  -c *.c
+entering source
+cd ..
+gcc -g -Wall -I../xenomai/include  -I../lib_destijl/headers  -c fonctions.c -o fonctions.o
+g++ fonctions.o global.o main.o ../lib_destijl/source/*.o -o robot -lopencv_core -lopencv_highgui -lopencv_imgproc -lxenomai -lnative -lrtdk -L../xenomai/lib
