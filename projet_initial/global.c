@@ -11,6 +11,7 @@ RT_TASK tServeur;
 RT_TASK tconnect;
 RT_TASK tmove;
 RT_TASK tenvoyer;
+RT_TASK ttraiter_image;
 
 RT_MUTEX mutexEtat;
 RT_MUTEX mutexMove;
@@ -21,9 +22,13 @@ RT_QUEUE queueMsgGUI;
 
 int etatCommMoniteur = 1;
 int etatCommRobot = 1;
+int img_transmit = 0;
 DRobot *robot;
 DMovement *move;
 DServer *serveur;
+DCamera *camera;
+DImage *image;
+DJpegimage *jpeg;
 
 
 int MSG_QUEUE_SIZE = 10;
@@ -32,3 +37,4 @@ int PRIORITY_TSERVEUR = 30;
 int PRIORITY_TCONNECT = 20;
 int PRIORITY_TMOVE = 10;
 int PRIORITY_TENVOYER = 25;
+int PRIORITY_TIMAGE = 20;
