@@ -19,7 +19,9 @@ extern "C" {
         void deplacer(void *arg);
         void envoyer(void *arg);
 	void traiter_image(void *arg);
-	/*void battery_level(void *arg);*/
+	//void battery_level(void *arg);
+	//void fermeture_connexion_robot(void *arg);
+	//void detecter_arene (void * arg);
 #ifdef	__cplusplus
 }
 #endif
