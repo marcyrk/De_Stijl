@@ -95,6 +95,18 @@ void initStruct(void) {
         exit(EXIT_FAILURE);
     }*/
 
+    /*if (err = rt_task_create(&tdetecter_arene, NULL, 0, PRIORITY_TARENE, 0)) {
+        rt_printf("Error task create: %s\n", strerror(-err));
+        exit(EXIT_FAILURE);
+	}*/
+
+    /*if (err = rt_task_create(&tfermeture_connexion_robot, NULL, 0, PRIORITY_TFERMER_ROBOT, 0)) {
+      rt_printf("Error task create: %s\n", strerror(-err));
+      exit(EXIT_FAILURE);
+      }*/
+    
+    
+
     /* Creation des files de messages */
     if (err = rt_queue_create(&queueMsgGUI, "toto", MSG_QUEUE_SIZE*sizeof(DMessage), MSG_QUEUE_SIZE, Q_FIFO)){
         rt_printf("Error msg queue create: %s\n", strerror(-err));
@@ -105,8 +117,7 @@ void initStruct(void) {
     robot = d_new_robot();
     move = d_new_movement();
     serveur = d_new_server();
-   
-	//battery = d_new_battery();
+    //battery = d_new_battery();
 }
 
 void startTasks() {
@@ -131,10 +142,21 @@ void startTasks() {
         rt_printf("Error task start: %s\n", strerror(-err));
         exit(EXIT_FAILURE);
     }
-   /* if (err = rt_task_start(&tbattery_level, &battery_level, NULL)) {
+    
+    /*if (err = rt_task_start(&tbattery_level, &battery_level, NULL)) {
         rt_printf("Error task start: %s\n", strerror(-err));
         exit(EXIT_FAILURE);
     }*/
+    
+    /*if (err = rt_task_start(&tdetecter_arene, &detecter_arene, NULL)) {
+      rt_printf("Error task start: %s\n", strerror(-err));
+      exit(EXIT_FAILURE);
+     }*/
+
+     /*if (err = rt_task_start(&tfermeture_connexion_robot, &fermeture_connexion_robot, NULL)) {
+      rt_printf("Error task start: %s\n", strerror(-err));
+      exit(EXIT_FAILURE);
+     }*/
 
 }
 
@@ -143,5 +165,7 @@ void deleteTasks() {
     rt_task_delete(&tconnect);
     rt_task_delete(&tmove);
     rt_task_delete(&ttraiter_image);
-   /* rt_task_delete(&tbattery_level);*/
+    //rt_task_delete(&tbattery_level);
+    //rt_task_delete(&tdetecter_arene);
+    //rt_task_delete(&tfermeture_connexion_robot);
 }
