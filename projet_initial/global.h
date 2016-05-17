@@ -16,7 +16,9 @@ extern RT_TASK tconnect;
 extern RT_TASK tmove;
 extern RT_TASK tenvoyer;
 extern RT_TASK ttraiter_image;
+//extern RT_TASK tdetecter_arene ;
 //extern RT_TASK tbattery_level;
+//extern RT_TASK tfermeture_connexion_robot ;
 
 /* @descripteurs des mutex */
 extern RT_MUTEX mutexEtat;
@@ -45,5 +47,8 @@ extern int PRIORITY_TCONNECT;
 extern int PRIORITY_TMOVE;
 extern int PRIORITY_TENVOYER;
 extern int PRIORITY_TIMAGE;
+//extern int PRIORITY_TARENE;
+//extern int PRIORITY_TBATTERY;
+//extern int PRIORITY_TFERMER_ROBOT;
 
 #endif	/* GLOBAL_H */
