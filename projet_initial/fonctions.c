@@ -220,16 +220,46 @@ int write_in_queue(RT_QUEUE *msgQueue, void * data, int size) {
     return err;
 }
 
-/*void fermeture_connexion_robot (void *arg) {
+/*void detecter_arene (void * arg) {
+
+  DCamera  *camera ;
+  DImage *image ;
+  DJpegimage *jpeg ;
+  DArena *arena ;
+
+  while (1) {
+    rt_printf("tdetecter_arene : Attente de demande de detection d'arene\n");
+
+    if (d_message_get_data(message) == ACTION_FIND_ARENA) {
+      img_transmit = 0 ;
+      camera->_get_frame(camera,image) ;
+      arena = image->compute_arena_position(image) ;
+      d_imageshop_draw_arena(image,arena) ;
+      jpeg->compress(jpeg,image) ;
+      message->put_jpeg_image(message,jpeg) ;
+
+      rt_printf("ttraiter_image : Envoi message\n");
+      //Besoin pour ce cas d'un seul envoi ?
+      //if (write_in_queue(&queueMsgGUI, message, sizeof (DMessage)) < 0) {
+	//message->free(message);
+	//}
+      image->release(image);
+      jpeg->release(jpeg);	
+    }
+  }
+}
+
+void fermeture_connexion_robot (void *arg) {
+  int msg_arrive = 1 ;
   int nbre_connexions_echouees = 0 ;
   DMessage *message = d_new_message();
 
   while (1) {
 
     rt_printf("tserver : Attente d'un message\n");
-    var1 = serveur->receive(serveur, message);
+    msg_arrive = serveur->receive(serveur, message);
 
-    if (var1 > 0) {
+    if (msg_arrive > 0) {
 
       if (robot_status != STATUS_OK) {
 	if (nbre_connexion_echouees < 3)
@@ -244,3 +274,5 @@ int write_in_queue(RT_QUEUE *msgQueue, void * data, int size) {
     }
   }
 }*/
+
+
