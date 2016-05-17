@@ -219,3 +219,28 @@ int write_in_queue(RT_QUEUE *msgQueue, void * data, int size) {
 
     return err;
 }
+
+/*void fermeture_connexion_robot (void *arg) {
+  int nbre_connexions_echouees = 0 ;
+  DMessage *message = d_new_message();
+
+  while (1) {
+
+    rt_printf("tserver : Attente d'un message\n");
+    var1 = serveur->receive(serveur, message);
+
+    if (var1 > 0) {
+
+      if (robot_status != STATUS_OK) {
+	if (nbre_connexion_echouees < 3)
+	  nbre_connexions_echouees++ ;
+	else if (nbre_connexion_echouees >= 3) {
+	  d_message_put_string(message, "Connexion perdue");
+	  d_robot_close_com(robot);
+	  nbre_connexions_echouees = 0 ;
+	}
+      }
+      else nbre_connexions_echouees = 0 ;
+    }
+  }
+}*/
