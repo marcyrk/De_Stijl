@@ -19,16 +19,18 @@ RT_TASK ttraiter_image;
 
 RT_MUTEX mutexServeur;
 RT_MUTEX mutexEtatMon;
-RT_MUTEX mutexEtatRob;
+RT_MUTEX mutexRobot;
 RT_MUTEX mutexMove;
 RT_MUTEX mutexArene;
+RT_MUTEX mutexBatterie;
+RT_MUTEX mutexPosition;
+RT_MUTEX mutexTransmit;
 
 RT_SEM semConnecterRobot;
 
 RT_QUEUE queueMsgGUI;
 
 int etatCommMoniteur = 1;
-int etatCommRobot = 1;
 int img_transmit = 0;
 DRobot *robot;
 DMovement *move;
