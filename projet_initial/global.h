@@ -18,7 +18,6 @@ extern RT_TASK tenvoyer;
 extern RT_TASK ttraiter_image;
 //extern RT_TASK tconnecter_moniteur
 //extern RT_TASK ttraiter_ordre
-
 //extern RT_TASK tdetecter_arene ;
 //extern RT_TASK tbattery_level;
 //extern RT_TASK tcalcul_pos;
