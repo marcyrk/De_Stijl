@@ -205,6 +205,18 @@ void startTasks() {
         exit(EXIT_FAILURE);
     }
     
+    /*
+    if (err = rt_task_start(&tconnecter_moniteur, &connecter_robot, NULL)) {
+        rt_printf("Error task start: %s\n", strerror(-err));
+        exit(EXIT_FAILURE);
+    }
+    if (err = rt_task_start(&ttraiter_ordre, &traiter_ordre, NULL)) {
+        rt_printf("Error task start: %s\n", strerror(-err));
+        exit(EXIT_FAILURE);
+    }*/
+ 
+    
+    
     /*if (err = rt_task_start(&tbattery_level, &battery_level, NULL)) {
         rt_printf("Error task start: %s\n", strerror(-err));
         exit(EXIT_FAILURE);
