@@ -24,6 +24,7 @@ extern RT_TASK ttraiter_image;
 /* @descripteurs des mutex */
 extern RT_MUTEX mutexEtat;
 extern RT_MUTEX mutexMove;
+extern RT_MUTEX mutexArene;
 
 /* @descripteurs des sempahore */
 extern RT_SEM semConnecterRobot;
