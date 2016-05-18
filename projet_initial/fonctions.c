@@ -14,13 +14,13 @@ void connecter_moniteur(void *arg) {
     rt_printf("tserver : Début de l'exécution de serveur\n");
 
     rt_mutex_acquire(&mutexServeur, TM_INFINITE);
-    Statut_serveur = serveur->open(serveur, "8000") ;
+    statut_serveur = serveur->open(serveur, "8000") ;
     rt_mutex_release(&mutexServeur) ;
 
 
-    rt_mutex_acquire(&mutexEtat, TM_INFINITE);
+    rt_mutex_acquire(&mutexEtatMon, TM_INFINITE);
     etatCommMoniteur = statut_serveur;
-    rt_mutex_release(&mutexEtat)
+    rt_mutex_release(&mutexEtatMon)
 
       if (Statut_serveur == 0){
       rt_printf("tserver : Connexion reussi\n");
@@ -60,16 +60,16 @@ while(1){
 
             if ( statut_serveur!= 0){
 
-            rt_mutex_acquire(&mutexEtat, TM_INFINITE);
+            rt_mutex_acquire(&mutexEtatMon, TM_INFINITE);
             etatCommMoniteur = 0;
-            rt_mutex_release(&mutexEtat) ;
+            rt_mutex_release(&mutexEtatMon) ;
             evolution = TEST_RECEPTION ;
 
             }
             else{
-            rt_mutex_acquire(&mutexEtat, TM_INFINITE);
+            rt_mutex_acquire(&mutexEtatMon, TM_INFINITE);
             etatCommMoniteur = -1;
-            rt_mutex_release(&mutexEtat) ;
+            rt_mutex_release(&mutexEtatMon) ;
             evolution = ATTENTE_CONNEXION ;
 
             }
