@@ -53,10 +53,16 @@ int main(int argc, char**argv) {
 void initStruct(void) {
     int err;
     /* Creation des mutex */
-    if (err = rt_mutex_create(&mutexEtat, NULL)) {
+    if (err = rt_mutex_create(&mutexEtatCom, NULL)) {
         rt_printf("Error mutex create: %s\n", strerror(-err));
         exit(EXIT_FAILURE);
     }
+    
+    if (err = rt_mutex_create(&mutexEtatRob, NULL)) {
+        rt_printf("Error mutex create: %s\n", strerror(-err));
+        exit(EXIT_FAILURE);
+    }
+    
     if (err = rt_mutex_create(&mutexMove, NULL)) {
         rt_printf("Error mutex create: %s\n", strerror(-err));
         exit(EXIT_FAILURE);
