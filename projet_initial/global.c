@@ -15,6 +15,7 @@ RT_TASK ttraiter_image;
 //RT_TASK tdetecter_arene;
 //RT_TASK tbattery_level;
 //RT_TASK tfermeture_connexion_robot;
+//RT_TASK tcalcul_pos;
 
 RT_MUTEX mutexEtat;
 RT_MUTEX mutexMove;
@@ -32,6 +33,7 @@ DServer *serveur;
 DArena *arena;
 
 //DBattery *battery;
+//DPosition *position;
 
 int MSG_QUEUE_SIZE = 10;
 
@@ -42,4 +44,5 @@ int PRIORITY_TENVOYER = 25;
 int PRIORITY_TIMAGE = 20;
 //int PRIORITY_TARENE = 23;
 //int PRIORITY_TBATTERY = 10;
+//int PRIORITY_TPOSITION = 20;
 //int PRIORITY_TFERMER_ROBOT = 35;
