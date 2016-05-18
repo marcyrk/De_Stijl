@@ -22,10 +22,14 @@ extern RT_TASK ttraiter_image;
 //extern RT_TASK tfermeture_connexion_robot ;
 
 /* @descripteurs des mutex */
-extern RT_MUTEX mutexEtatCom;
-extern RT_MUTEX mutexEtatRob;
+extern RT_MUTEX mutexServeur;
+extern RT_MUTEX mutexEtatMon;
+extern RT_MUTEX mutexRobot;
 extern RT_MUTEX mutexMove;
 extern RT_MUTEX mutexArene;
+extern RT_MUTEX mutexBatterie;
+extern RT_MUTEX mutexPosition;
+extern RT_MUTEX mutexTransmit;
 
 /* @descripteurs des sempahore */
 extern RT_SEM semConnecterRobot;
@@ -35,7 +39,6 @@ extern RT_QUEUE queueMsgGUI;
 
 /* @variables partagées */
 extern int etatCommMoniteur;
-extern int etatCommRobot;
 extern int img_transmit;
 extern DServer *serveur;
 extern DRobot *robot;
