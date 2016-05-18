@@ -1,4 +1,8 @@
 #include "fonctions.h"
+#define ATTENTE_CONNEXION 0
+#define TEST_CONNEXION 1
+#define TEST_RECEPTION 2
+#define TEST_LECTURE 3
 
 
 int write_in_queue(RT_QUEUE *msgQueue, void * data, int size);
