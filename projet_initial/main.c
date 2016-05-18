@@ -205,6 +205,21 @@ void startTasks() {
         exit(EXIT_FAILURE);
     }
     
+    
+    /*
+     if (err = rt_task_start(&tconnecter_moniteur, &connecter_moniteur, NULL)) {
+        rt_printf("Error task start: %s\n", strerror(-err));
+        exit(EXIT_FAILURE);
+    }*/
+    /*
+    if (err = rt_task_start(&ttraiter_ordre, &traiter_ordre, NULL)) {
+        rt_printf("Error task start: %s\n", strerror(-err));
+        exit(EXIT_FAILURE);
+    }*/
+    
+    
+    
+    
     /*
     if (err = rt_task_start(&tconnecter_moniteur, &connecter_robot, NULL)) {
         rt_printf("Error task start: %s\n", strerror(-err));
@@ -244,6 +259,8 @@ void deleteTasks() {
     rt_task_delete(&tconnect);
     rt_task_delete(&tmove);
     rt_task_delete(&ttraiter_image);
+   // rt_task_delete(&tconnecter_moniteur);
+    //rt_task_delete(&ttraiter_ordre);
     //rt_task_delete(&tbattery_level);
     //rt_task_delete(&tdetecter_arene);
     //rt_task_delete(&tfermeture_connexion_robot);
