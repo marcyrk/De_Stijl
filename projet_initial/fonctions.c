@@ -10,7 +10,7 @@ int write_in_queue(RT_QUEUE *msgQueue, void * data, int size);
 
 void connecter_moniteur(void *arg) {
 
-    int statut_serveur ;
+    int statut_serveur = 0;
     rt_printf("tserver : Début de l'exécution de serveur\n");
 
     rt_mutex_acquire(&mutexServeur, TM_INFINITE);
@@ -38,9 +38,9 @@ void connecter_moniteur(void *arg) {
 void Traiter_ordre(void *arg) {
     int evolution = TEST_CONNEXION;
 
-  int nb_octets_recu ;
+  int nb_octets_recu = 0;
   DMessage *msg = d_new_message();
-  int statut_serveur ;
+  int statut_serveur = 0;
 
 
 while(1){
@@ -131,13 +131,15 @@ while(1){
 
 void envoyer(void * arg) {
     DMessage *msg;
-    int err;
+    int err = 0;
 
     while (1) {
         rt_printf("tenvoyer : Attente d'un message\n");
         if ((err = rt_queue_read(&queueMsgGUI, &msg, sizeof (DMessage), TM_INFINITE)) >= 0) {
             rt_printf("tenvoyer : envoi d'un message au moniteur\n");
+            rt_mutex_acquire(&mutexServeur, TM_INFINITE);
             serveur->send(serveur, msg);
+            rt_mutex_release(&mutexServeur);
             msg->free(msg);
         } else {
             rt_printf("Error msg queue write: %s\n", strerror(-err));
@@ -146,7 +148,7 @@ void envoyer(void * arg) {
 }
 
 void connecter(void * arg) {
-    int status;
+    int status = 0;
     DMessage *message;
 
     rt_printf("tconnect : Debut de l'exécution de tconnect\n");
@@ -155,17 +157,18 @@ void connecter(void * arg) {
         rt_printf("tconnect : Attente du sémarphore semConnecterRobot\n");
         rt_sem_p(&semConnecterRobot, TM_INFINITE);
         rt_printf("tconnect : Ouverture de la communication avec le robot\n");
+        rt_mutex_acquire(&mutexRobot, TM_INFINITE);
         status = robot->open_device(robot);
+        rt_mutex_release(&mutexRobot);
 
-        rt_mutex_acquire(&mutexEtatRob, TM_INFINITE);
-        etatCommRobot = status;
-        rt_mutex_release(&mutexEtatRob);
 
         if (status == STATUS_OK) {
-            status = robot->start_insecurely(robot);
-            if (status == STATUS_OK){
-                rt_printf("tconnect : Robot démarrer\n");
-            }
+        	rt_mutex_acquire(&mutexRobot, TM_INFINITE);
+		status = robot->start_insecurely(robot);
+		rt_mutex_release(&mutexRobot);
+		if (status == STATUS_OK){
+		rt_printf("tconnect : Robot démarrer\n");
+		}
         }
 
         message = d_new_message();
@@ -186,7 +189,9 @@ void communiquer(void *arg) {
     int num_msg = 0;
 
     rt_printf("tserver : Début de l'exécution de serveur\n");
+    rt_mutex_acquire(&mutexServeur, TM_INFINITE);
     serveur->open(serveur, "8000");
+    rt_mutex_release(&mutexServeur);
     rt_printf("tserver : Connexion\n");
 
     rt_mutex_acquire(&mutexEtatMon, TM_INFINITE);
@@ -195,7 +200,9 @@ void communiquer(void *arg) {
 
     while (var1 > 0) {
         rt_printf("tserver : Attente d'un message\n");
+        rt_mutex_acquire(&mutexServeur, TM_INFINITE);
         var1 = serveur->receive(serveur, msg);
+        rt_mutex_release(&mutexServeur);
         num_msg++;
         if (var1 > 0) {
             switch (msg->get_type(msg)) {
@@ -238,9 +245,9 @@ void deplacer(void *arg) {
         rt_task_wait_period(NULL);
         rt_printf("tmove : Activation périodique\n");
 
-        rt_mutex_acquire(&mutexEtatRob, TM_INFINITE);
-        status = etatCommRobot;
-        rt_mutex_release(&mutexEtatRob);
+        rt_mutex_acquire(&mutexRobot, TM_INFINITE);
+        status = robot->get_status(robot);
+        rt_mutex_release(&mutexRobot);
 
         if (status == STATUS_OK) {
             rt_mutex_acquire(&mutexMove, TM_INFINITE);
@@ -267,13 +274,11 @@ void deplacer(void *arg) {
                     break;
             }
             rt_mutex_release(&mutexMove);
-
+	    rt_mutex_acquire(&mutexRobot, TM_INFINITE);
             status = robot->set_motors(robot, gauche, droite);
+            rt_mutex_release(&mutexRobot);
 
             if (status != STATUS_OK) {
-                rt_mutex_acquire(&mutexEtatRob, TM_INFINITE);
-                etatCommRobot = status;
-                rt_mutex_release(&mutexEtatRob);
 
                 message = d_new_message();
                 message->put_state(message, status);
