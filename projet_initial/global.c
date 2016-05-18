@@ -29,6 +29,7 @@ int img_transmit = 0;
 DRobot *robot;
 DMovement *move;
 DServer *serveur;
+DArena *arena;
 
 //DBattery *battery;
 
