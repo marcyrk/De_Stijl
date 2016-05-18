@@ -249,6 +249,35 @@ int write_in_queue(RT_QUEUE *msgQueue, void * data, int size) {
   }
 }
 
+// CALCUL DE LA POSITION DU ROBOT 
+
+// nécessite la réception de l'ordre du moniteur pour ACTION_COMPUTE_CONTINUOUSLY_POSITION
+
+/*
+void calcul_pos(DImage *image){
+	DAction *action;
+	DMessage *message;
+	DJpegimage *jpeg;
+	
+	rt_printf("tcalcul_pos : Debut de l'éxecution de periodique à 600ms\n");
+    rt_task_set_periodic(NULL, TM_NOW, 600000000);
+    
+    while(1){
+        // Attente de l'activation périodique 
+        rt_task_wait_period(NULL);
+        rt_printf("tcalcul_pos : Activation périodique\n");
+    	
+    	position = d_image_compute_robot_position(image, arena);
+    	d_imageshop_draw_position(image, position);
+    	d_jpegimage_compress(jpeg, image);
+    	message = d_new_message();
+    	d_message_put_jpeg_image(message, jpeg);
+    	// voir comment se passe l'envoi de message, si besoin de libérer le message avec free ou non
+    	message = d_new_message();
+    	d_message_put_position(message, position);
+    }
+}
+
 void fermeture_connexion_robot (void *arg) {
   int msg_arrive = 1 ;
   int nbre_connexions_echouees = 0 ;
