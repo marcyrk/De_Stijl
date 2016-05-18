@@ -18,6 +18,7 @@ extern RT_TASK tenvoyer;
 extern RT_TASK ttraiter_image;
 //extern RT_TASK tdetecter_arene ;
 //extern RT_TASK tbattery_level;
+//extern RT_TASK tcalcul_pos;
 //extern RT_TASK tfermeture_connexion_robot ;
 
 /* @descripteurs des mutex */
@@ -39,6 +40,7 @@ extern DRobot *robot;
 extern DMovement *move;
 extern DArena *arena;
 //extern DBattery *battery;
+//extern DPosition *position;
 
 /* @constantes */
 extern int MSG_QUEUE_SIZE;
@@ -50,5 +52,6 @@ extern int PRIORITY_TIMAGE;
 //extern int PRIORITY_TARENE;
 //extern int PRIORITY_TBATTERY;
 //extern int PRIORITY_TFERMER_ROBOT;
+//extern int PRIORITY_TPOSITION;
 
 #endif	/* GLOBAL_H */
