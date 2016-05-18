@@ -244,7 +244,7 @@ void battery_level(void *arg){
 		}
 	}
 }
-
+*/
 /*void detecter_arene (void * arg) {
 
   DCamera  *camera ;
