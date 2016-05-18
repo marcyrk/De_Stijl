@@ -22,7 +22,8 @@ extern RT_TASK ttraiter_image;
 //extern RT_TASK tfermeture_connexion_robot ;
 
 /* @descripteurs des mutex */
-extern RT_MUTEX mutexEtat;
+extern RT_MUTEX mutexEtatCom;
+extern RT_MUTEX mutexEtatRob;
 extern RT_MUTEX mutexMove;
 extern RT_MUTEX mutexArene;
 
