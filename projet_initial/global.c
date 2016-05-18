@@ -17,7 +17,8 @@ RT_TASK ttraiter_image;
 //RT_TASK tfermeture_connexion_robot;
 //RT_TASK tcalcul_pos;
 
-RT_MUTEX mutexEtat;
+RT_MUTEX mutexEtatCom;
+RT_MUTEX mutexEtatRob;
 RT_MUTEX mutexMove;
 RT_MUTEX mutexArene;
 
