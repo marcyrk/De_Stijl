@@ -19,6 +19,7 @@ RT_TASK ttraiter_image;
 
 RT_MUTEX mutexEtat;
 RT_MUTEX mutexMove;
+RT_MUTEX mutexArene;
 
 RT_SEM semConnecterRobot;
 
