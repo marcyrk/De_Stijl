@@ -14,19 +14,19 @@ void connecter_moniteur(void *arg) {
     rt_printf("tserver : Début de l'exécution de serveur\n");
 
     rt_mutex_acquire(&mutexServeur, TM_INFINITE);
-    statut_serveur = serveur->open(serveur, "8000") ;
+    Statut_serveur = serveur->open(serveur, "8000") ;
     rt_mutex_release(&mutexServeur) ;
 
 
-    rt_mutex_acquire(&mutexEtatMon, TM_INFINITE);
+    rt_mutex_acquire(&mutexEtat, TM_INFINITE);
     etatCommMoniteur = statut_serveur;
-    rt_mutex_release(&mutexEtatMon)
+    rt_mutex_release(&mutexEtat)
 
       if (Statut_serveur == 0){
       rt_printf("tserver : Connexion reussi\n");
        rt_sem_v(&semConnexionEtablie);
     }
-      else{
+      else{ 
 	rt_printf("tserver : Connexion échouée\n");
 	rt_sem_v(&semConnexionEchouee);
       }
@@ -60,16 +60,16 @@ while(1){
 
             if ( statut_serveur!= 0){
 
-            rt_mutex_acquire(&mutexEtatMon, TM_INFINITE);
+            rt_mutex_acquire(&mutexEtat, TM_INFINITE);
             etatCommMoniteur = 0;
-            rt_mutex_release(&mutexEtatMon) ;
+            rt_mutex_release(&mutexEtat) ;
             evolution = TEST_RECEPTION ;
 
             }
             else{
-            rt_mutex_acquire(&mutexEtatMon, TM_INFINITE);
+            rt_mutex_acquire(&mutexEtat, TM_INFINITE);
             etatCommMoniteur = -1;
-            rt_mutex_release(&mutexEtatMon) ;
+            rt_mutex_release(&mutexEtat) ;
             evolution = ATTENTE_CONNEXION ;
 
             }
@@ -287,6 +287,119 @@ void deplacer(void *arg) {
     }
 }
 
+/*
+void deplacer(void *arg) {
+    int status = 1;
+    int gauche;
+    int droite;
+    float angle = 0.0;
+    int vitesse_mouvement = 0;
+    char type_msg;
+
+    DMessage *message;
+
+    rt_printf("tmove : Debut de l'éxecution de periodique à 200ms\n");
+    rt_task_set_periodic(NULL, TM_NOW, 200000000);
+
+    while (1) {
+        // Attente de l'activation périodique
+        rt_task_wait_period(NULL);
+        rt_printf("tmove : Activation périodique\n");
+
+        rt_mutex_acquire(&mutexEtat, TM_INFINITE);
+        status = etatCommRobot;
+        rt_mutex_release(&mutexEtat);
+
+    if (status == STATUS_OK) {
+
+        type_msg = message->get_type(movement);
+
+        if (type_msg == MESSAGE_TYPE_MOVEMENT){
+
+            rt_mutex_acquire(&mutexMove, TM_INFINITE);
+
+            switch (move->get_direction(move)) {
+                case DIRECTION_FORWARD:
+                    gauche = MOTEUR_ARRIERE_LENT;
+                    droite = MOTEUR_ARRIERE_LENT;
+                    break;
+                case DIRECTION_LEFT:
+                    gauche = MOTEUR_ARRIERE_LENT;
+                    droite = MOTEUR_AVANT_LENT;
+                    break;
+                case DIRECTION_RIGHT:
+                    gauche = MOTEUR_AVANT_LENT;
+                    droite = MOTEUR_ARRIERE_LENT;
+                    break;
+                case DIRECTION_STOP:
+                    gauche = MOTEUR_STOP;
+                    droite = MOTEUR_STOP;
+                    break;
+                case DIRECTION_STRAIGHT:
+                    gauche = MOTEUR_AVANT_LENT;
+                    droite = MOTEUR_AVANT_LENT;
+                    break;
+            }
+
+            vitesse_mouvement = get_speed(move);
+
+            // regarde si la vitesse demandés pour le robot est supérieure à 50
+            if (vitesse_mouvement >= 50){
+
+                switch (move->get_direction(move))
+
+                case DIRECTION_FORWARD:
+                    gauche = MOTEUR_AVANT_RAPIDE;
+                    droite = MOTEUR_AVANT_RAPIDE;
+                    break;
+
+                case DIRECTION_BACKWARD:
+                    gauche = MOTEUR_ARRIERE_RAPIDE;
+                    droite = MOTEUR_ARRIERE_RAPIDE;
+                    break;
+
+            }
+
+            rt_mutex_release(&mutexMove);
+
+            status = robot->set_motors(robot, gauche, droite);
+
+        }
+
+        else if (type_msg == MESSAGE_TYPE_POSITION){
+
+            DPosition *position;
+            rt_mutex_acquire(&mutexMove, TM_INFINITE);
+            put(movement, position);
+
+            angle = position->get_orientation(position);
+
+            rt_mutex_release(&mutexMove);
+
+            status = robot->turn(robot, (180.0*angle)/3.14, HORAIRE);
+        }
+
+
+    }
+
+
+    if (status != STATUS_OK) {
+        rt_mutex_acquire(&mutexEtat, TM_INFINITE);
+        etatCommRobot = status;
+        rt_mutex_release(&mutexEtat);
+
+        message = d_new_message();
+        message->put_state(message, status);
+
+        rt_printf("tmove : Envoi message\n");
+        if (write_in_queue(&queueMsgGUI, message, sizeof (DMessage)) < 0) {
+                    message->free(message);
+                }
+            }
+        }
+}
+
+*/
 
 void traiter_image (void *arg) {
    int status = 1;
