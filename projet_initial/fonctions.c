@@ -30,9 +30,9 @@ void connecter(void * arg) {
         rt_printf("tconnect : Ouverture de la communication avec le robot\n");
         status = robot->open_device(robot);
 
-        rt_mutex_acquire(&mutexEtat, TM_INFINITE);
+        rt_mutex_acquire(&mutexEtatRob, TM_INFINITE);
         etatCommRobot = status;
-        rt_mutex_release(&mutexEtat);
+        rt_mutex_release(&mutexEtatRob);
 
         if (status == STATUS_OK) {
             status = robot->start_insecurely(robot);
@@ -62,9 +62,9 @@ void communiquer(void *arg) {
     serveur->open(serveur, "8000");
     rt_printf("tserver : Connexion\n");
 
-    rt_mutex_acquire(&mutexEtat, TM_INFINITE);
+    rt_mutex_acquire(&mutexEtatMon, TM_INFINITE);
     etatCommMoniteur = 0;
-    rt_mutex_release(&mutexEtat);
+    rt_mutex_release(&mutexEtatMon);
 
     while (var1 > 0) {
         rt_printf("tserver : Attente d'un message\n");
@@ -111,9 +111,9 @@ void deplacer(void *arg) {
         rt_task_wait_period(NULL);
         rt_printf("tmove : Activation périodique\n");
 
-        rt_mutex_acquire(&mutexEtat, TM_INFINITE);
+        rt_mutex_acquire(&mutexEtatRob, TM_INFINITE);
         status = etatCommRobot;
-        rt_mutex_release(&mutexEtat);
+        rt_mutex_release(&mutexEtatRob);
 
         if (status == STATUS_OK) {
             rt_mutex_acquire(&mutexMove, TM_INFINITE);
@@ -144,9 +144,9 @@ void deplacer(void *arg) {
             status = robot->set_motors(robot, gauche, droite);
 
             if (status != STATUS_OK) {
-                rt_mutex_acquire(&mutexEtat, TM_INFINITE);
+                rt_mutex_acquire(&mutexEtatRob, TM_INFINITE);
                 etatCommRobot = status;
-                rt_mutex_release(&mutexEtat);
+                rt_mutex_release(&mutexEtatRob);
 
                 message = d_new_message();
                 message->put_state(message, status);
@@ -163,9 +163,9 @@ void deplacer(void *arg) {
 
 void traiter_image (void *arg) {
    int status = 1;
-	DCamera * camera = d_new_camera();
-    DImage *image = d_new_image();
-    DJpegimage *jpeg = d_new_jpegimage();
+   DCamera * camera = d_new_camera();
+   DImage *image = d_new_image();
+   DJpegimage *jpeg = d_new_jpegimage();
    DMessage *message;
 
     camera->open(camera);
@@ -179,9 +179,9 @@ void traiter_image (void *arg) {
         rt_task_wait_period(NULL);
         rt_printf("ttraiter_image : Activation périodique\n");
 
-        rt_mutex_acquire(&mutexEtat, TM_INFINITE);
+        rt_mutex_acquire(&mutexEtatMon, TM_INFINITE);
         status = etatCommMoniteur;
-        rt_mutex_release(&mutexEtat);
+        rt_mutex_release(&mutexEtatMon);
 	
         if (status == STATUS_OK) {
 			
@@ -233,9 +233,9 @@ void battery_level(void *arg){
         rt_task_wait_period(NULL);
         rt_printf("tbattery_level : Activation périodique\n");
         
-		rt_mutex_acquire(&mutexEtat, TM_INFINITE);
+		rt_mutex_acquire(&mutexEtatRob, TM_INFINITE);
 		status = etatCommRobot;
-		rt_mutex_release(&mutexEtat);
+		rt_mutex_release(&mutexEtatRob);
 		
 		if (status == STATUS_OK){
 			status = d_robot_get_vbat(robot, &vbat);
@@ -313,13 +313,15 @@ void fermeture_connexion_robot (void *arg) {
   while (1) {
 
     rt_printf("tserver : Attente d'un message\n");
+    rt_mutex_acquire(&mutexServeur, TM_INFINITE);
     msg_arrive = serveur->receive(serveur, message);
+    rt_mutex_release(&mutexServeur);
 
     if (msg_arrive > 0) {
     
-    	rt_mutex_acquire(&mutexEtat, TM_INFINITE);
+    	rt_mutex_acquire(&mutexEtatMon, TM_INFINITE);
         status = etatCommMoniteur;
-        rt_mutex_release(&mutexEtat);
+        rt_mutex_release(&mutexEtatMon);
 
       if (status != STATUS_OK) {
 	if (nbre_connexion_echouees < 3)
