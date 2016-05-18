@@ -94,11 +94,34 @@ void initStruct(void) {
         exit(EXIT_FAILURE);
     }
 
+
+
+
     /* Creation du semaphore */
     if (err = rt_sem_create(&semConnecterRobot, NULL, 0, S_FIFO)) {
         rt_printf("Error semaphore create: %s\n", strerror(-err));
         exit(EXIT_FAILURE);
     }
+
+ 	if (err = rt_sem_create(&semConnexionEtablie, NULL, 0, S_FIFO)) {
+        rt_printf("Error semaphore create: %s\n", strerror(-err));
+        exit(EXIT_FAILURE);
+    }
+     if (err = rt_sem_create(&semConnexionEchouee, NULL, 0, S_FIFO)) {
+        rt_printf("Error semaphore create: %s\n", strerror(-err));
+        exit(EXIT_FAILURE);
+    }
+     if (err = rt_sem_create(&semLancerPosition, NULL, 0, S_FIFO)) {
+        rt_printf("Error semaphore create: %s\n", strerror(-err));
+        exit(EXIT_FAILURE);
+    }
+     if (err = rt_sem_create(&semTrouverArene, NULL, 0, S_FIFO)) {
+        rt_printf("Error semaphore create: %s\n", strerror(-err));
+        exit(EXIT_FAILURE);
+    }
+
+
+
 
     /* Creation des taches */
     if (err = rt_task_create(&tServeur, NULL, 0, PRIORITY_TSERVEUR, 0)) {
