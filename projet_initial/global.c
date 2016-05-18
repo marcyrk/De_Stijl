@@ -12,6 +12,8 @@ RT_TASK tconnect;
 RT_TASK tmove;
 RT_TASK tenvoyer;
 RT_TASK ttraiter_image;
+//RT_TASK tconnecter_moniteur
+//RT_TASK ttraiter_ordre
 //RT_TASK tdetecter_arene;
 //RT_TASK tbattery_level;
 //RT_TASK tfermeture_connexion_robot;
@@ -27,6 +29,10 @@ RT_MUTEX mutexPosition;
 RT_MUTEX mutexTransmit;
 
 RT_SEM semConnecterRobot;
+RT_SEM semConnexionEtablie;
+RT_SEM semConnexionEchouee ;
+RT_SEM semLancerPosition ;
+RT_SEM semTrouverArene ;
 
 RT_QUEUE queueMsgGUI;
 
