@@ -33,6 +33,15 @@ extern RT_MUTEX mutexTransmit;
 
 /* @descripteurs des sempahore */
 extern RT_SEM semConnecterRobot;
+extern RT_SEM semConnexionEtablie;
+extern RT_SEM semConnexionEchouee ;
+extern RT_SEM semLancerPosition ;
+extern RT_SEM semTrouverArene ;
+
+
+
+
+
 
 /* @descripteurs des files de messages */
 extern RT_QUEUE queueMsgGUI;
