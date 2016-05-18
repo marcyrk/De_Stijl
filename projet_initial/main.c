@@ -53,12 +53,33 @@ int main(int argc, char**argv) {
 void initStruct(void) {
     int err;
     /* Creation des mutex */
+
+    if (err = rt_mutex_create(&mutexServeur, NULL)) {
+        rt_printf("Error mutex create: %s\n", strerror(-err));
+        exit(EXIT_FAILURE);
+    }
+    
+    if (err = rt_mutex_create(&mutexBatterie, NULL)) {
+        rt_printf("Error mutex create: %s\n", strerror(-err));
+        exit(EXIT_FAILURE);
+    }
+    
+    if (err = rt_mutex_create(&mutexPosition, NULL)) {
+        rt_printf("Error mutex create: %s\n", strerror(-err));
+        exit(EXIT_FAILURE);
+    }
+    
+    if (err = rt_mutex_create(&mutexTransmit, NULL)) {
+        rt_printf("Error mutex create: %s\n", strerror(-err));
+        exit(EXIT_FAILURE);
+    }
+
     if (err = rt_mutex_create(&mutexEtatCom, NULL)) {
         rt_printf("Error mutex create: %s\n", strerror(-err));
         exit(EXIT_FAILURE);
     }
     
-    if (err = rt_mutex_create(&mutexEtatRob, NULL)) {
+    if (err = rt_mutex_create(&mutexRobot, NULL)) {
         rt_printf("Error mutex create: %s\n", strerror(-err));
         exit(EXIT_FAILURE);
     }
@@ -135,6 +156,7 @@ void initStruct(void) {
     serveur = d_new_server();
     arena = d_new_arena();
     //battery = d_new_battery();
+    img_transmit = 1 ;
 }
 
 void startTasks() {
