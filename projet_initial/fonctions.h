@@ -22,6 +22,7 @@ extern "C" {
 	//void battery_level(void *arg);
 	//void fermeture_connexion_robot(void *arg);
 	//void detecter_arene (void * arg);
+	//void calcul_pos(void *arg);
 #ifdef	__cplusplus
 }
 #endif
