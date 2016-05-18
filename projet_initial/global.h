@@ -37,7 +37,7 @@ extern int img_transmit;
 extern DServer *serveur;
 extern DRobot *robot;
 extern DMovement *move;
-
+extern DArena *arena;
 //extern DBattery *battery;
 
 /* @constantes */
