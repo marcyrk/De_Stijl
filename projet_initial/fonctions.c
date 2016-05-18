@@ -1,6 +1,129 @@
 #include "fonctions.h"
 
+
 int write_in_queue(RT_QUEUE *msgQueue, void * data, int size);
+
+
+void connecter_moniteur(void *arg) {
+
+    int statut_serveur ;
+    rt_printf("tserver : Début de l'exécution de serveur\n");
+
+    rt_mutex_acquire(&mutexServeur, TM_INFINITE);
+    Statut_serveur = serveur->open(serveur, "8000") ;
+    rt_mutex_release(&mutexServeur) ;
+
+
+    rt_mutex_acquire(&mutexEtat, TM_INFINITE);
+    etatCommMoniteur = statut_serveur;
+    rt_mutex_release(&mutexEtat)
+
+      if (Statut_serveur == 0){
+      rt_printf("tserver : Connexion reussi\n");
+       rt_sem_v(&semConnexionEtablie);
+    }
+      else{
+	rt_printf("tserver : Connexion échouée\n");
+	rt_sem_v(&semConnexionEchouee);
+      }
+
+}
+
+
+
+void Traiter_ordre(void *arg) {
+    int evolution = TEST_CONNEXION;
+
+  int nb_octets_recu ;
+  DMessage *msg = d_new_message();
+  int statut_serveur ;
+
+
+while(1){
+
+  // Verifier le partage de la variable serveur
+    if(evolution == ATTENTE_CONNEXION)¸{
+    rt_printf("Attente de connexion\n");
+    rt_sem_p(&semConnexionEtablie, TM_INFINITE);
+    rt_printf("Connexion reussi\n");
+    evolution = TEST_CONNEXION
+
+
+    }else if(evolution == TEST_CONNEXION){
+        rt_mutex_acquire(&mutexServeur, TM_INFINITE);
+        statut_serveur = d_server_is_active(serveur) ;
+        rt_mutex_release(&mutexServeur) ;
+
+            if ( statut_serveur!= 0){
+
+            rt_mutex_acquire(&mutexEtat, TM_INFINITE);
+            etatCommMoniteur = 0;
+            rt_mutex_release(&mutexEtat) ;
+            evolution = TEST_RECEPTION ;
+
+            }
+            else{
+            rt_mutex_acquire(&mutexEtat, TM_INFINITE);
+            etatCommMoniteur = -1;
+            rt_mutex_release(&mutexEtat) ;
+            evolution = ATTENTE_CONNEXION ;
+
+            }
+
+    }else if(evolution == TEST_RECEPTION){
+        rt_mutex_acquire(&mutexServeur, TM_INFINITE);
+        nb_octets_recu = d_server_receive(serveur,msg) ;
+        rt_mutex_release(&mutexServeur) ;
+        evolution = TEST_LECTURE ;
+    }
+
+    else if(evolution == TEST_LECTURE){
+
+
+
+
+          switch(msg->get_type()) {
+
+            case MESSAGE_TYPE_MOVEMENT:
+
+                rt_mutex_acquire(&mutexMove, TM_INFINITE);
+                movement->from_message(movement,msg) ;
+                rt_mutex_release(&mutexMove) ;
+                evolution = TEST_CONNEXION ;
+                break;
+
+            case MESSAGE_TYPE_ACTION:
+
+                DAction *monAction ;
+                monAction = d_new_action() ;
+
+
+                monAction->from_message(monAction,msg)
+                switch(monAction->get_order(monAction)){
+                    case ACTION_COMPUTE_CONTINUOUSLY_POSITION:
+                        rt_sem_v(&semLancerPosition);
+                        evolution = TEST_CONNEXION ;
+                    break ;
+
+                    case ACTION_CONNECT_ROBOT :
+                        rt_sem_v(&semConnecterRobot);
+                        evolution = TEST_CONNEXION ;
+                    break ;
+
+                    case ACTION_FIND_ARENA:
+                        rt_sem_v(&semTrouverArene) ;
+                        evolution = TEST_CONNEXION ;
+                    break ;
+                }
+            }
+        }
+
+
+    }
+}
+
+
+
 
 void envoyer(void * arg) {
     DMessage *msg;
