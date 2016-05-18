@@ -225,7 +225,6 @@ int write_in_queue(RT_QUEUE *msgQueue, void * data, int size) {
   DCamera  *camera ;
   DImage *image ;
   DJpegimage *jpeg ;
-  DArena *arena ;
 
   while (1) {
     rt_printf("tdetecter_arene : Attente de demande de detection d'arene\n");
@@ -233,7 +232,9 @@ int write_in_queue(RT_QUEUE *msgQueue, void * data, int size) {
     if (d_message_get_data(message) == ACTION_FIND_ARENA) {
       img_transmit = 0 ;
       camera->_get_frame(camera,image) ;
+      rt_mutex_acquire(&mutexArene, TM_INFINITE);
       arena = image->compute_arena_position(image) ;
+      rt_mutex_release(&mutexArene);
       d_imageshop_draw_arena(image,arena) ;
       jpeg->compress(jpeg,image) ;
       message->put_jpeg_image(message,jpeg) ;
@@ -280,6 +281,7 @@ void calcul_pos(DImage *image){
 
 void fermeture_connexion_robot (void *arg) {
   int msg_arrive = 1 ;
+  int status = 1 ;
   int nbre_connexions_echouees = 0 ;
   DMessage *message = d_new_message();
 
@@ -289,8 +291,12 @@ void fermeture_connexion_robot (void *arg) {
     msg_arrive = serveur->receive(serveur, message);
 
     if (msg_arrive > 0) {
+    
+    	rt_mutex_acquire(&mutexEtat, TM_INFINITE);
+        status = etatCommMoniteur;
+        rt_mutex_release(&mutexEtat);
 
-      if (robot_status != STATUS_OK) {
+      if (status != STATUS_OK) {
 	if (nbre_connexion_echouees < 3)
 	  nbre_connexions_echouees++ ;
 	else if (nbre_connexion_echouees >= 3) {
