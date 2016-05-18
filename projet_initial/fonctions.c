@@ -219,6 +219,31 @@ int write_in_queue(RT_QUEUE *msgQueue, void * data, int size) {
 
     return err;
 }
+/*
+void battery_level(void *arg){
+	int status = 1;
+	int vbat = -1;
+	DMessage *message;
+	
+    rt_printf("tbattery_level : Debut de l'éxecution de periodique à 250ms\n");
+    rt_task_set_periodic(NULL, TM_NOW, 250000000);
+
+    while (1) {
+        // Attente de l'activation périodique 
+        rt_task_wait_period(NULL);
+        rt_printf("tbattery_level : Activation périodique\n");
+        
+		rt_mutex_acquire(&mutexEtat, TM_INFINITE);
+		status = etatCommRobot;
+		rt_mutex_release(&mutexEtat);
+		
+		if (status == STATUS_OK){
+			status = d_robot_get_vbat(robot, &vbat);
+			d_battery_set_level(battery, vbat);
+			d_message_put_battery_level(message, battery);
+		}
+	}
+}
 
 /*void detecter_arene (void * arg) {
 
@@ -249,7 +274,7 @@ int write_in_queue(RT_QUEUE *msgQueue, void * data, int size) {
     }
   }
 }
-
+*/
 // CALCUL DE LA POSITION DU ROBOT 
 
 // nécessite la réception de l'ordre du moniteur pour ACTION_COMPUTE_CONTINUOUSLY_POSITION
