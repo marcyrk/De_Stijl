@@ -21,9 +21,9 @@ void connecter_moniteur(void *arg) {
     rt_mutex_release(&mutexServeur) ;
 
 
-    rt_mutex_acquire(&mutexEtatMon, TM_INFINITE);
+    rt_mutex_acquire(&mutexEtat, TM_INFINITE);
     etatCommMoniteur = statut_serveur;
-    rt_mutex_release(&mutexEtatMon);
+    rt_mutex_release(&mutexEtat);
 
       if (statut_serveur == 0){
       rt_printf("tserver : Connexion reussie\n");
@@ -37,7 +37,6 @@ void connecter_moniteur(void *arg) {
 }
 //==========================================================================
 
-/*
 
 // à tester
 void traiter_ordre(void *arg) {
@@ -46,61 +45,46 @@ void traiter_ordre(void *arg) {
 	DMessage *msg = d_new_message();
 	int statut_serveur;
 	DAction *monAction = d_new_action();
-
 	// test
 	int num_msg = 0;
-
 while(1){
-
 	// Verifier le partage de la variable serveur
 	if(evolution == ATTENTE_CONNEXION){
     rt_printf("Attente de connexion\n");
     rt_sem_p(&semConnexionEtablie, TM_INFINITE);
     rt_printf("Connexion reussie\n");
     evolution = TEST_CONNEXION;
-
-
     }else if(evolution == TEST_CONNEXION){
         rt_mutex_acquire(&mutexServeur, TM_INFINITE);
         statut_serveur = d_server_is_active(serveur) ;
         rt_mutex_release(&mutexServeur) ;
-
             if ( statut_serveur!= 0){
-
-            rt_mutex_acquire(&mutexEtat, TM_INFINITE);
+            rt_mutex_acquire(&mutexEtatMon, TM_INFINITE);
             etatCommMoniteur = 0;
-            rt_mutex_release(&mutexEtat) ;
+            rt_mutex_release(&mutexEtatMon) ;
             evolution = TEST_RECEPTION ;
-
             }
             else{
-            rt_mutex_acquire(&mutexEtat, TM_INFINITE);
+            rt_mutex_acquire(&mutexEtatMon, TM_INFINITE);
             etatCommMoniteur = -1;
-            rt_mutex_release(&mutexEtat) ;
+            rt_mutex_release(&mutexEtatMon) ;
             evolution = ATTENTE_CONNEXION ;
-
             }
-
     }else if(evolution == TEST_RECEPTION){
         rt_mutex_acquire(&mutexServeur, TM_INFINITE);
         nb_octets_recu = d_server_receive(serveur,msg) ;
         rt_mutex_release(&mutexServeur) ;
         evolution = TEST_LECTURE ;
     }
-
     else if(evolution == TEST_LECTURE){
           switch(msg->get_type(msg)) {
-
             case MESSAGE_TYPE_MOVEMENT:
-
                 rt_mutex_acquire(&mutexMove, TM_INFINITE);
                 move->from_message(move,msg) ;
                 rt_mutex_release(&mutexMove) ;
                 evolution = TEST_CONNEXION ;
                 break;
-
             case MESSAGE_TYPE_ACTION:
-
                 //DAction *monAction = d_new_action();
                 rt_printf("tserver : Le message %d reçu est une action\n",
                             num_msg);
@@ -108,18 +92,15 @@ while(1){
 				rt_printf("COUCOU ACTION DEMANDÉE EST ");
 				rt_printf(monAction);
 				rt_printf("COUCOU C'ETAIT L'ACTION DEMANDÉE");
-
                 switch(monAction->get_order(monAction)){
                     case ACTION_COMPUTE_CONTINUOUSLY_POSITION:
                         rt_sem_v(&semLancerPosition);
                         evolution = TEST_CONNEXION ;
                     break ;
-
                     case ACTION_CONNECT_ROBOT :
                         rt_sem_v(&semConnecterRobot);
                         evolution = TEST_CONNEXION ;
                     break ;
-
                     case ACTION_FIND_ARENA:
                         rt_sem_v(&semTrouverArene) ;
                         evolution = TEST_CONNEXION ;
@@ -127,12 +108,9 @@ while(1){
                 }
             }
         }
-
-
     }
 }
 
-*/
 
 //==========================================================================
 
@@ -143,9 +121,11 @@ void envoyer(void * arg) {
     while (1) {
         rt_printf("tenvoyer : Attente d'un message\n");
         if ((err = rt_queue_read(&queueMsgGUI, &msg, sizeof (DMessage), TM_INFINITE)) >= 0) {
-            rt_printf("tenvoyer : envoi d'un message au moniteur\n");
-            serveur->send(serveur, msg);
-            msg->free(msg);
+	  rt_printf("tenvoyer : envoi d'un message au moniteur\n");
+	  rt_mutex_acquire(&mutexServeur, TM_INFINITE);
+	  serveur->send(serveur, msg);
+	  rt_mutex_release(&mutexServeur);
+	  msg->free(msg);
         } else {
             rt_printf("Error msg queue write: %s\n", strerror(-err));
         }
@@ -166,15 +146,10 @@ void connecter(void * arg) {
         rt_printf("tconnect : Attente du sémarphore semConnecterRobot\n");
         rt_sem_p(&semConnecterRobot, TM_INFINITE);
         rt_printf("tconnect : Ouverture de la communication avec le robot\n");
+	rt_mutex_acquire(&mutexRobot, TM_INFINITE);
+	rt_printf("tconnect : mutex acquired\n");
         status = robot->open_device(robot);
-
-        //rt_mutex_acquire(&mutexEtat, TM_INFINITE);
-		rt_mutex_acquire(&mutexRobot, TM_INFINITE);
-		rt_printf("tconnect : mutex acquired\n");
-        etatCommRobot = status;
-        //rt_mutex_release(&mutexEtat);
-		rt_mutex_release(&mutexRobot);
-		rt_printf("tconnect : mutex released\n");
+        etatCommRobot = status;	
 
         if (status == STATUS_OK) {
             status = robot->start_insecurely(robot);
@@ -182,6 +157,8 @@ void connecter(void * arg) {
                 rt_printf("tconnect : Robot démarrer\n");
             }
         }
+	rt_mutex_release(&mutexRobot);
+	rt_printf("tconnect : mutex released\n");
 
         message = d_new_message();
         message->put_state(message, status);
@@ -212,10 +189,12 @@ void communiquer(void *arg) {
     rt_mutex_release(&mutexEtatMon);
 
     while (var1 > 0) {
-        rt_printf("tserver : Attente d'un message\n");
-        var1 = serveur->receive(serveur, msg);
-        num_msg++;
-        if (var1 > 0) {
+      rt_printf("tserver : Attente d'un message\n");
+      rt_mutex_acquire(&mutexServeur, TM_INFINITE);
+      var1 = serveur->receive(serveur, msg);
+      rt_mutex_release(&mutexServeur);
+      num_msg++;
+      if (var1 > 0) {
             switch (msg->get_type(msg)) {
                 case MESSAGE_TYPE_ACTION:
                     rt_printf("tserver : Le message %d reçu est une action\n",
@@ -258,9 +237,9 @@ void deplacer(void *arg) {
         rt_task_wait_period(NULL);
         rt_printf("tmove : Activation périodique\n");
 
-        rt_mutex_acquire(&mutexEtatRob, TM_INFINITE);
-        status = etatCommRobot;
-        rt_mutex_release(&mutexEtatRob);
+        rt_mutex_acquire(&mutexRobot, TM_INFINITE);
+	status = robot->get_status(robot);
+	rt_mutex_release(&mutexRobot);
 
         if (status == STATUS_OK) {
             rt_mutex_acquire(&mutexMove, TM_INFINITE);
@@ -288,12 +267,14 @@ void deplacer(void *arg) {
             }
             rt_mutex_release(&mutexMove);
 
-            status = robot->set_motors(robot, gauche, droite);
+	    rt_mutex_acquire(&mutexRobot, TM_INFINITE);
+	    status = robot->set_motors(robot, gauche, droite);
+	    rt_mutex_release(&mutexRobot);
 
             if (status != STATUS_OK) {
-                rt_mutex_acquire(&mutexEtatRob, TM_INFINITE);
-                etatCommRobot = status;
-                rt_mutex_release(&mutexEtatRob);
+                rt_mutex_acquire(&mutexRobot, TM_INFINITE);
+                status = robot->get_status(robot);
+                rt_mutex_release(&mutexRobot);
 
                 message = d_new_message();
                 message->put_state(message, status);
@@ -315,29 +296,20 @@ void deplacer(void *arg) {
     float angle = 0.0;
     int vitesse_mouvement = 0;
     char type_msg;
-
     DMessage *message;
-
     rt_printf("tmove : Debut de l'éxecution de periodique à 200ms\n");
     rt_task_set_periodic(NULL, TM_NOW, 200000000);
-
     while (1) {
         // Attente de l'activation périodique
         rt_task_wait_period(NULL);
         rt_printf("tmove : Activation périodique\n");
-
-        rt_mutex_acquire(&mutexEtat, TM_INFINITE);
-        status = etatCommRobot;
-        rt_mutex_release(&mutexEtat);
-
+        rt_mutex_acquire(&mutexRobot, TM_INFINITE);
+        status = robot->get_status(robot);
+        rt_mutex_release(&mutexRobot);
     if (status == STATUS_OK) {
-
         type_msg = message->get_type(movement);
-
         if (type_msg == MESSAGE_TYPE_MOVEMENT){
-
             rt_mutex_acquire(&mutexMove, TM_INFINITE);
-
             switch (move->get_direction(move)) {
                 case DIRECTION_FORWARD:
                     gauche = MOTEUR_ARRIERE_LENT;
@@ -360,78 +332,67 @@ void deplacer(void *arg) {
                     droite = MOTEUR_AVANT_LENT;
                     break;
             }
-
             vitesse_mouvement = get_speed(move);
-
             // regarde si la vitesse demandés pour le robot est supérieure à 50
             if (vitesse_mouvement >= 50){
-
                 switch (move->get_direction(move))
-
                 case DIRECTION_FORWARD:
                     gauche = MOTEUR_AVANT_RAPIDE;
                     droite = MOTEUR_AVANT_RAPIDE;
                     break;
-
                 case DIRECTION_BACKWARD:
                     gauche = MOTEUR_ARRIERE_RAPIDE;
                     droite = MOTEUR_ARRIERE_RAPIDE;
                     break;
-
             }
-
             rt_mutex_release(&mutexMove);
 
-            status = robot->set_motors(robot, gauche, droite);
-
+	    rt_mutex_acquire(&mutexRobot, TM_INFINITE);
+	    status = robot->set_motors(robot, gauche, droite);
+	    rt_mutex_release(&mutexRobot);
         }
-
         else if (type_msg == MESSAGE_TYPE_POSITION){
-
             DPosition *position;
             rt_mutex_acquire(&mutexMove, TM_INFINITE);
+	    rt_mutex_acquire(&mutexPositionRobot, TM_INFINITE);
             put(movement, position);
-
             angle = position->get_orientation(position);
-
             rt_mutex_release(&mutexMove);
-
+	    rt_mutex_release(&mutexPosition);
+	    rt_mutex_acquire(&mutexRobot, TM_INFINITE);
             status = robot->turn(robot, (180.0*angle)/3.14, HORAIRE);
+	    rt_mutex_release(&mutexRobot);
         }
-
-
-    }
-
-
-    if (status != STATUS_OK) {
-        rt_mutex_acquire(&mutexEtat, TM_INFINITE);
-        etatCommRobot = status;
-        rt_mutex_release(&mutexEtat);
-
-        message = d_new_message();
+	}
+	if (status != STATUS_OK) {
+	rt_mutex_acquire(&mutexRobot, TM_INFINITE);
+	status = robot->get_status(robot);
+	rt_mutex_release(&mutexRobot);
+	message = d_new_message();
         message->put_state(message, status);
-
         rt_printf("tmove : Envoi message\n");
         if (write_in_queue(&queueMsgGUI, message, sizeof (DMessage)) < 0) {
-                    message->free(message);
-                }
-            }
-        }
+	message->free(message);
+	}
+     }
+   }
 }
-
 */
 
 //==========================================================================
 
 void traiter_image (void *arg) {
-   int status = 1;
-   DCamera * camera = d_new_camera();
+  int status = 1;
+  DCamera * camera = d_new_camera();
    DImage *image = d_new_image();
    DJpegimage *jpeg = d_new_jpegimage();
    DMessage *message;
 
-    camera->open(camera);
-    img_transmit = 1;
+   camera->open(camera);
+   rt_mutex_acquire(&mutexTransmit, TM_INFINITE);
+   img_transmit = 1;
+   rt_mutex_release(&mutexTransmit);
+  
 
     rt_printf("ttraiter_image : Debut de l'éxecution de periodique à 600ms\n");
     rt_task_set_periodic(NULL, TM_NOW, 600000000);
@@ -446,24 +407,25 @@ void traiter_image (void *arg) {
         rt_mutex_release(&mutexEtatMon);
 	
         if (status == STATUS_OK) {
-			
-		  	if (img_transmit == 1) {
+	  rt_mutex_acquire(&mutexTransmit, TM_INFINITE);	
+	  if (img_transmit == 1) {
 			 
-				camera->get_frame(camera,image);
-				jpeg->compress(jpeg,image);
+	    camera->get_frame(camera,image);
+	    jpeg->compress(jpeg,image);
 
-				message = d_new_message();
-				message->put_jpeg_image(message,jpeg);
+	    message = d_new_message();
+	    message->put_jpeg_image(message,jpeg);
 	
-				rt_printf("ttraiter_image : Envoi message\n");
-                if (write_in_queue(&queueMsgGUI, message, sizeof (DMessage)) < 0) {
-                    message->free(message);
-                }
-				image->release(image);
-				jpeg->release(jpeg);
+	    rt_printf("ttraiter_image : Envoi message\n");
+	    if (write_in_queue(&queueMsgGUI, message, sizeof (DMessage)) < 0) {
+	      message->free(message);
+	    }
+	    image->release(image);
+	    jpeg->release(jpeg);
 	
-			}
-		}
+	  }
+	  rt_mutex_release(&mutexTransmit);
+	}
     }
 }
 
@@ -477,7 +439,7 @@ int write_in_queue(RT_QUEUE *msgQueue, void * data, int size) {
     memcpy(msg, &data, size);
 
     if ((err = rt_queue_send(msgQueue, msg, sizeof (DMessage), Q_NORMAL)) < 0) {
-        rt_printf("Error msg queue send: %s\n", strerror(-err));
+      rt_printf("Error msg queue send: %s\n", strerror(-err));
     }
     rt_queue_free(&queueMsgGUI, msg);
 
@@ -498,22 +460,24 @@ void battery_level(void *arg){
         rt_task_wait_period(NULL);
         rt_printf("tbattery_level : Activation périodique\n");
 
-		//rt_mutex_acquire(&mutexEtat, TM_INFINITE);
-		rt_mutex_acquire(&mutexRobot, TM_INFINITE);
-		status = etatCommRobot;
-		//rt_mutex_release(&mutexEtat);
-		rt_mutex_release(&mutexRobot);
-		
-		if (status == STATUS_OK){
-			status = d_robot_get_vbat(robot, &vbat);
-			d_battery_set_level(battery, vbat);
-			message = d_new_message();	
-			d_message_put_battery_level(message, battery);
+	rt_mutex_acquire(&mutexRobot, TM_INFINITE);
+	status = robot->get_status(robot);
+	rt_mutex_release(&mutexRobot);
 
-			rt_printf("tbattery_level : Envoi message\n");
-		        if (write_in_queue(&queueMsgGUI, message, sizeof (DMessage)) < 0) {
-		            message->free(message);
-                	}
+		
+	if (status == STATUS_OK){
+	  rt_mutex_acquire(&mutexBatterie, TM_INFINITE);
+	  rt_mutex_acquire(&mutexRobot, TM_INFINITE);
+	  status = d_robot_get_vbat(robot, &vbat);
+	  rt_mutex_release(&mutexRobot);
+	  d_battery_set_level(battery, vbat);
+	  d_message_put_battery_level(message, battery);
+	  rt_mutex_release(&mutexBatterie);
+
+	  rt_printf("tbattery_level : Envoi message\n");
+	  if (write_in_queue(&queueMsgGUI, message, sizeof (DMessage)) < 0) {
+	    message->free(message);
+	  }
 		}
 	}
 }
@@ -523,24 +487,22 @@ void battery_level(void *arg){
 // nécessite le fonctionnement de traiter_ordre
 
 /*void detecter_arene (void * arg) {
-
   DCamera  *camera ;
   DImage *image ;
   DJpegimage *jpeg ;
-
   while (1) {
     rt_printf("tdetecter_arene : Attente de demande de detection d'arene\n");
-
     if (d_message_get_data(message) == ACTION_FIND_ARENA) {
+      rt_mutex_acquire(&mutexTransmit, TM_INFINITE);
       img_transmit = 0 ;
+      rt_mutex_release(&mutexTransmit);
       camera->_get_frame(camera,image) ;
       rt_mutex_acquire(&mutexArene, TM_INFINITE);
-      arena = image->compute_arena_position(image) ;
-      rt_mutex_release(&mutexArene);
+      arena = image->compute_arena_position(image) ;      
       d_imageshop_draw_arena(image,arena) ;
+      rt_mutex_release(&mutexArene);
       jpeg->compress(jpeg,image) ;
       message->put_jpeg_image(message,jpeg) ;
-
       rt_printf("ttraiter_image : Envoi message\n");
       //Besoin pour ce cas d'un seul envoi ?
       //if (write_in_queue(&queueMsgGUI, message, sizeof (DMessage)) < 0) {
@@ -570,7 +532,10 @@ void calcul_pos(DImage *image){
         rt_task_wait_period(NULL);
         rt_printf("tcalcul_pos : Activation périodique\n");
     	
-    	position = d_image_compute_robot_position(image, arena);
+	rt_mutex_acquire(&mutexPosition, TM_INFINITE);
+	rt_mutex_acquire(&mutexArene, TM_INFINITE);
+	position = d_image_compute_robot_position(image, arena);
+	rt_mutex_release(&mutexArene);
     	d_imageshop_draw_position(image, position);
     	d_jpegimage_compress(jpeg, image);
     	message = d_new_message();
@@ -578,6 +543,7 @@ void calcul_pos(DImage *image){
     	// voir comment se passe l'envoi de message, si besoin de libérer le message avec free ou non
     	message = d_new_message();
     	d_message_put_position(message, position);
+	rt_mutex_release(&mutexPosition);
     }
 }
 
@@ -599,13 +565,14 @@ void fermeture_connexion_robot (void *arg) {
     	rt_mutex_acquire(&mutexEtatMon, TM_INFINITE);
         status = etatCommMoniteur;
         rt_mutex_release(&mutexEtatMon);
-
       if (status != STATUS_OK) {
 	if (nbre_connexion_echouees < 3)
 	  nbre_connexions_echouees++ ;
 	else if (nbre_connexion_echouees >= 3) {
 	  d_message_put_string(message, "Connexion perdue");
+	  rt_mutex_acquire(&mutexRobot, TM_INFINITE);
 	  d_robot_close_com(robot);
+	  rt_mutex_release(&mutexRobot);
 	  nbre_connexions_echouees = 0 ;
 	}
       }
@@ -613,5 +580,3 @@ void fermeture_connexion_robot (void *arg) {
     }
   }
 }*/
-
-
