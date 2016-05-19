@@ -19,12 +19,15 @@ extern "C" {
         void deplacer(void *arg);
         void envoyer(void *arg);
 	void traiter_image(void *arg);
-	//void connecter_moniteur(void *arg) ;
-	//void Traiter_ordre(void *arg) ;
-	//void battery_level(void *arg);
+	void battery_level(void *arg);
 	//void fermeture_connexion_robot(void *arg);
-	//void detecter_arene (void * arg);
+	void detecter_arene (void * arg);
 	//void calcul_pos(void *arg);
+
+	void connecter_moniteur(void *arg) ;
+	//void traiter_ordre(void *arg) ;
+
+	int write_in_queue(RT_QUEUE *msgQueue, void * data, int size);
 #ifdef	__cplusplus
 }
 #endif
