@@ -21,9 +21,9 @@ void connecter_moniteur(void *arg) {
     rt_mutex_release(&mutexServeur) ;
 
 
-    rt_mutex_acquire(&mutexEtat, TM_INFINITE);
+    rt_mutex_acquire(&mutexEtatMon, TM_INFINITE);
     etatCommMoniteur = statut_serveur;
-    rt_mutex_release(&mutexEtat);
+    rt_mutex_release(&mutexEtatMon);
 
       if (statut_serveur == 0){
       rt_printf("tserver : Connexion reussie\n");
