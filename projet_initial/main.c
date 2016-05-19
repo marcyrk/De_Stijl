@@ -53,7 +53,6 @@ int main(int argc, char**argv) {
 void initStruct(void) {
     int err;
     /* Creation des mutex */
-
     if (err = rt_mutex_create(&mutexServeur, NULL)) {
         rt_printf("Error mutex create: %s\n", strerror(-err));
         exit(EXIT_FAILURE);
@@ -74,11 +73,12 @@ void initStruct(void) {
         exit(EXIT_FAILURE);
     }
 
-    if (err = rt_mutex_create(&mutexEtatCom, NULL)) {
+    if (err = rt_mutex_create(&mutexEtat, NULL)) {
         rt_printf("Error mutex create: %s\n", strerror(-err));
         exit(EXIT_FAILURE);
     }
     
+
     if (err = rt_mutex_create(&mutexRobot, NULL)) {
         rt_printf("Error mutex create: %s\n", strerror(-err));
         exit(EXIT_FAILURE);
@@ -93,9 +93,6 @@ void initStruct(void) {
         rt_printf("Error mutex create: %s\n", strerror(-err));
         exit(EXIT_FAILURE);
     }
-
-
-
 
     /* Creation du semaphore */
     if (err = rt_sem_create(&semConnecterRobot, NULL, 0, S_FIFO)) {
@@ -121,8 +118,6 @@ void initStruct(void) {
     }
 
 
-
-
     /* Creation des taches */
     if (err = rt_task_create(&tServeur, NULL, 0, PRIORITY_TSERVEUR, 0)) {
         rt_printf("Error task create: %s\n", strerror(-err));
@@ -132,6 +127,17 @@ void initStruct(void) {
         rt_printf("Error task create: %s\n", strerror(-err));
         exit(EXIT_FAILURE);
     }
+
+    if (err = rt_task_create(&tconnecter_moniteur, NULL, 0, PRIORITY_TCONNECT, 0)) {
+        rt_printf("Error task create: %s\n", strerror(-err));
+        exit(EXIT_FAILURE);
+    }
+/*
+    if (err = rt_task_create(&ttraiter_ordre, NULL, 0, PRIORITY_TCONNECT, 0)) {
+        rt_printf("Error task create: %s\n", strerror(-err));
+        exit(EXIT_FAILURE);
+    }*/
+
     if (err = rt_task_create(&tmove, NULL, 0, PRIORITY_TMOVE, 0)) {
         rt_printf("Error task create: %s\n", strerror(-err));
         exit(EXIT_FAILURE);
@@ -141,19 +147,20 @@ void initStruct(void) {
         exit(EXIT_FAILURE);
     }
 
-    if (err = rt_task_create(&ttraiter_image, NULL, 0, PRIORITY_TIMAGE, 0)) {
+    if (err = rt_task_create(&ttraiter_image, NULL, 0, PRIORITY_TIMAGE, 0)) 	{
         rt_printf("Error task create: %s\n", strerror(-err));
         exit(EXIT_FAILURE);
     }
-	/*if (err = rt_task_create(&tbattery_level, NULL, 0, PRIORITY_TBATTERY, 0)) {
+	
+	if (err = rt_task_create(&tbattery_level, NULL, 0, PRIORITY_TBATTERY, 0)) {
         rt_printf("Error task create: %s\n", strerror(-err));
         exit(EXIT_FAILURE);
-    }*/
+    }
 
-    /*if (err = rt_task_create(&tdetecter_arene, NULL, 0, PRIORITY_TARENE, 0)) {
+    if (err = rt_task_create(&tdetecter_arene, NULL, 0, PRIORITY_TARENE, 0)) {
         rt_printf("Error task create: %s\n", strerror(-err));
         exit(EXIT_FAILURE);
-	}*/
+	}
 
     /*if (err = rt_task_create(&tfermeture_connexion_robot, NULL, 0, PRIORITY_TFERMER_ROBOT, 0)) {
       rt_printf("Error task create: %s\n", strerror(-err));
@@ -178,16 +185,30 @@ void initStruct(void) {
     move = d_new_movement();
     serveur = d_new_server();
     arena = d_new_arena();
-    //battery = d_new_battery();
-    img_transmit = 1 ;
+	image = d_new_image();
+    battery = d_new_battery();
 }
 
 void startTasks() {
     int err;
+
     if (err = rt_task_start(&tconnect, &connecter, NULL)) {
         rt_printf("Error task start: %s\n", strerror(-err));
         exit(EXIT_FAILURE);
     }
+
+
+    
+     if (err = rt_task_start(&tconnecter_moniteur, &connecter_moniteur, NULL)) {
+        rt_printf("Error task start connecter_moniteur: %s\n", strerror(-err));
+        exit(EXIT_FAILURE);
+    }
+/*
+    if (err = rt_task_start(&ttraiter_ordre, &traiter_ordre, NULL)) {
+        rt_printf("Error task start traiter_ordre: %s\n", strerror(-err));
+        exit(EXIT_FAILURE);
+    }
+*/
     if (err = rt_task_start(&tServeur, &communiquer, NULL)) {
         rt_printf("Error task start: %s\n", strerror(-err));
         exit(EXIT_FAILURE);
@@ -200,44 +221,21 @@ void startTasks() {
         rt_printf("Error task start: %s\n", strerror(-err));
         exit(EXIT_FAILURE);
     }
+	
     if (err = rt_task_start(&ttraiter_image, &traiter_image, NULL)) {
         rt_printf("Error task start: %s\n", strerror(-err));
         exit(EXIT_FAILURE);
     }
-    
-    
-    /*
-     if (err = rt_task_start(&tconnecter_moniteur, &connecter_moniteur, NULL)) {
-        rt_printf("Error task start: %s\n", strerror(-err));
-        exit(EXIT_FAILURE);
-    }*/
-    /*
-    if (err = rt_task_start(&ttraiter_ordre, &traiter_ordre, NULL)) {
-        rt_printf("Error task start: %s\n", strerror(-err));
-        exit(EXIT_FAILURE);
-    }*/
-    
-    
-    
-    
-    /*
-    if (err = rt_task_start(&tconnecter_moniteur, &connecter_robot, NULL)) {
+
+     
+    if (err = rt_task_start(&tbattery_level, &battery_level, NULL)) {
         rt_printf("Error task start: %s\n", strerror(-err));
         exit(EXIT_FAILURE);
     }
-    if (err = rt_task_start(&ttraiter_ordre, &traiter_ordre, NULL)) {
-        rt_printf("Error task start: %s\n", strerror(-err));
-        exit(EXIT_FAILURE);
-    }*/
- 
-    
-    
-    /*if (err = rt_task_start(&tbattery_level, &battery_level, NULL)) {
-        rt_printf("Error task start: %s\n", strerror(-err));
-        exit(EXIT_FAILURE);
-    }*/
-    
-    /*if (err = rt_task_start(&tdetecter_arene, &detecter_arene, NULL)) {
+
+	// à rajouter dès que le traitement des ordres du moniteur fonctionnera
+    /*
+    if (err = rt_task_start(&tdetecter_arene, &detecter_arene, NULL)) {
       rt_printf("Error task start: %s\n", strerror(-err));
       exit(EXIT_FAILURE);
      }*/
@@ -250,7 +248,7 @@ void startTasks() {
      /*if (err = rt_calcul_pos(&tcalcul_pos, &calcul_pos, NULL)) {
         rt_printf("Error task start: %s\n", strerror(-err));
         exit(EXIT_FAILURE);
-    }*/
+    }*/    
 
 }
 
@@ -259,10 +257,11 @@ void deleteTasks() {
     rt_task_delete(&tconnect);
     rt_task_delete(&tmove);
     rt_task_delete(&ttraiter_image);
-   // rt_task_delete(&tconnecter_moniteur);
-    //rt_task_delete(&ttraiter_ordre);
-    //rt_task_delete(&tbattery_level);
-    //rt_task_delete(&tdetecter_arene);
+    rt_task_delete(&tbattery_level);
+    rt_task_delete(&tdetecter_arene);
     //rt_task_delete(&tfermeture_connexion_robot);
     //rt_task_delete(&tcalcul_pos);
+
+    rt_task_delete(&tconnecter_moniteur);
+    //rt_task_delete(&ttraiter_ordre);
 }
