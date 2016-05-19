@@ -137,7 +137,7 @@ void envoyer(void * arg) {
 // problème avec les mutex !!! impossible de rentrer dans le sémaphore d'ouverture de connexion avec le robot
 
 void connecter(void * arg) {
-    int status;
+    int status = 0;
     DMessage *message;
 
     rt_printf("tconnect : Debut de l'exécution de tconnect\n");
@@ -271,9 +271,6 @@ void deplacer(void *arg) {
 	    rt_mutex_release(&mutexRobot);
 
             if (status != STATUS_OK) {
-                rt_mutex_acquire(&mutexRobot, TM_INFINITE);
-                status = robot->get_status(robot);
-                rt_mutex_release(&mutexRobot);
 
                 message = d_new_message();
                 message->put_state(message, status);
@@ -381,8 +378,8 @@ void deplacer(void *arg) {
 //==========================================================================
 
 void traiter_image (void *arg) {
-  int status = 1;
-  DCamera * camera = d_new_camera();
+   int status = 1;
+   DCamera * camera = d_new_camera();
    DImage *image = d_new_image();
    DJpegimage *jpeg = d_new_jpegimage();
    DMessage *message;
