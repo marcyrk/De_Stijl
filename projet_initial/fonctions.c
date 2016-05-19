@@ -21,9 +21,9 @@ void connecter_moniteur(void *arg) {
     rt_mutex_release(&mutexServeur) ;
 
 
-    rt_mutex_acquire(&mutexEtat, TM_INFINITE);
+    rt_mutex_acquire(&mutexEtatMon, TM_INFINITE);
     etatCommMoniteur = statut_serveur;
-    rt_mutex_release(&mutexEtat);
+    rt_mutex_release(&mutexEtatMon);
 
       if (statut_serveur == 0){
       rt_printf("tserver : Connexion reussie\n");
@@ -149,7 +149,6 @@ void connecter(void * arg) {
 	rt_mutex_acquire(&mutexRobot, TM_INFINITE);
 	rt_printf("tconnect : mutex acquired\n");
         status = robot->open_device(robot);
-        etatCommRobot = status;	
 
         if (status == STATUS_OK) {
             status = robot->start_insecurely(robot);
@@ -354,7 +353,7 @@ void deplacer(void *arg) {
         else if (type_msg == MESSAGE_TYPE_POSITION){
             DPosition *position;
             rt_mutex_acquire(&mutexMove, TM_INFINITE);
-	    rt_mutex_acquire(&mutexPositionRobot, TM_INFINITE);
+	    rt_mutex_acquire(&mutexPosition, TM_INFINITE);
             put(movement, position);
             angle = position->get_orientation(position);
             rt_mutex_release(&mutexMove);
