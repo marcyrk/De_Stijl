@@ -575,4 +575,34 @@ void fermeture_connexion_robot (void *arg) {
       else nbre_connexions_echouees = 0 ;
     }
   }
+  
+  void Fermeture_connexion(void *arg) {
+
+    int statut_serveur ;
+    rt_printf("Fermeture_connexion : Attente de l'instruction de deconnexion\n");
+    rt_sem_p(&semConnexionEchouee, TM_INFINITE);
+
+    rt_mutex_acquire(&mutexServeur, TM_INFINITE);
+    serveur->close(serveur) ;
+    //serveur->free(serveur) ;
+    rt_mutex_release(&mutexServeur) ;
+
+
+    rt_mutex_acquire(&mutexEtatMon, TM_INFINITE);
+    etatCommMoniteur = -1;
+    rt_mutex_release(&mutexEtatMon) ;
+
+    rt_mutex_acquire(&mutexRobot, TM_INFINITE);
+    robot->close_com(robot) ;
+    //robot->free(robot) ;
+    rt_mutex_release(&mutexRobot) ;
+
+
+}
+
+  
+  
+  
+  
+  
 }*/
